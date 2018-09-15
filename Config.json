@@ -1,11 +1,11 @@
 {
-	"ModId": "sonicheroes.utils.inputmod",
-	"ModName": "Heroes Input Mod",
-	"ModDescription": "Uses Reloaded's Controller library to feed Sonic Heroes inputs.\nSupports all players P1-P4 (P3,P4 only used by debug functionality).\nSee mod folder after 1st run for config files allowing controller rebinding.",
-	"ModVersion": "1.0.0",
-	"ModAuthor": "Sewer56",
-	"ModSite": "",
-	"ModSource": "",
-	"ConfigurationFile": "",
-	"Dependencies": []
+  "ModId": "sonicheroes.utils.inputmod",
+  "ModName": "Heroes Input Mod",
+  "ModDescription": "Uses Reloaded's Controller library to feed Sonic Heroes inputs.\nSupports all players P1-P4 (P3,P4 only used by debug functionality).\nSee mod folder after 1st run for config files allowing controller rebinding.",
+  "ModVersion": "1.0.0",
+  "ModAuthor": "Sewer56",
+  "ModSite": "",
+  "ModSource": "https://github.com/sewer56lol/Heroes-Controller-Hook",
+  "ConfigurationFile": "",
+  "Dependencies": []
 }
