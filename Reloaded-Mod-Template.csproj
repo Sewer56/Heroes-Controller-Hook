@@ -20,7 +20,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\build\Debug\Default-Mods\Reloaded-Mod-Template\</OutputPath>
+    <OutputPath>C:\Users\sewer56lol\AppData\Roaming\Reloaded-Mod-Loader\Reloaded-Mods\Sonic-Heroes\Input-Mod\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -29,7 +29,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\build\Release\Default-Mods\Reloaded-Mod-Template\</OutputPath>
+    <OutputPath>C:\Users\sewer56lol\AppData\Roaming\Reloaded-Mod-Loader\Reloaded-Mods\Sonic-Heroes\Input-Mod\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>2</WarningLevel>
@@ -74,7 +74,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Github-Release|AnyCPU'">
-    <OutputPath>bin\Github-Release\</OutputPath>
+    <OutputPath>C:\Users\sewer56lol\AppData\Roaming\Reloaded-Mod-Loader\Reloaded-Mods\Sonic-Heroes\Input-Mod\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Github-Release|x86'">
     <OutputPath>bin\x86\Github-Release\</OutputPath>
@@ -93,6 +93,18 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\ControllerButton.cs" />
+    <Compile Include="Config\ControllerButtonFunctionBuilder.cs" />
+    <Compile Include="Config\ControllerMapping.cs" />
+    <Compile Include="Config\ControllerMappingDictionaryFactory.cs" />
+    <Compile Include="Config\ControllerMappingFactory.cs" />
+    <Compile Include="Controller\Heroes\HeroesControllerFactory.cs" />
+    <Compile Include="Controller\Heroes\HeroesControllerHelper.cs" />
+    <Compile Include="Controller\Heroes\ButtonFlags.cs" />
+    <Compile Include="Controller\Heroes\HeroesController.cs" />
+    <Compile Include="Controller\Heroes\SkyPad.cs" />
+    <Compile Include="Controller\ReloadedController.cs" />
+    <Compile Include="Misc\Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ReloadedTemplate\Client.cs" />
@@ -108,11 +120,17 @@
     <PackageReference Include="libReloaded">
       <Version>2.0.0-beta2</Version>
     </PackageReference>
+    <PackageReference Include="libReloaded-Input">
+      <Version>2.0.0-beta2</Version>
+    </PackageReference>
     <PackageReference Include="libReloaded-Paths">
       <Version>2.0.0-beta2</Version>
     </PackageReference>
     <PackageReference Include="LiteNetLib-custom">
       <Version>0.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>11.0.2</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -120,6 +138,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>move /Y "$(TargetDir)\Reloaded\*" "$(TargetDir)"

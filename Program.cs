@@ -2,12 +2,24 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
+using System.Windows.Forms;
 using Reloaded;
 using Reloaded.Assembler;
+using Reloaded.Input;
 using Reloaded.Process;
+using Reloaded.Process.Buffers;
+using Reloaded.Process.Functions.X86Functions;
+using Reloaded.Process.Functions.X86Hooking;
 using Reloaded.Process.Memory;
+using Reloaded.Process.Native;
+using Reloaded_Mod_Template.Controller;
+using Reloaded_Mod_Template.Controller.Heroes;
+using Reloaded_Mod_Template.Misc;
+using static Reloaded.Process.Functions.X86Functions.ReloadedFunctionAttribute;
+using CallingConventions = Reloaded.Process.Functions.X86Functions.CallingConventions;
 
 namespace Reloaded_Mod_Template
 {
@@ -91,6 +103,7 @@ namespace Reloaded_Mod_Template
         */
         #endregion Mod Loader Template Description
 
+        #region Reloaded Mod Template Variables
         /*
             Default Variables:
             These variables are automatically assigned by the mod template, you do not
@@ -114,19 +127,96 @@ namespace Reloaded_Mod_Template
         /// is contained in.
         /// </summary>
         public static string ModDirectory;
-        
-        /// <summary>
-        /// Your own user code starts here.
-        /// If this is your first time, do consider reading the notice above.
-        /// It contains some very useful information.
-        /// </summary>
+        #endregion Reloaded Mod Template Variables
+
+        private static ReloadedController playerOneController;
+        private static ReloadedController playerTwoController;
+        private static ReloadedController playerThreeController;
+        private static ReloadedController playerFourController;
+
+        private static FunctionHook<psPADServerPC> psPADServerHook;
+        private static sGamePeri__MakeRepeatCount periMakeRepeatFunction;
+        private static FunctionHook<sGamePeri__MakeRepeatCount> periMakeRepeatCountHook;
+
+        /* Entry Point */
         public static unsafe void Init()
         {
-            #if DEBUG
+#if DEBUG
             Debugger.Launch();
-            #endif
+#endif
 
-            Bindings.PrintInfo("Hello World!");
+            // Setup controllers.
+            var controllerManager = new ControllerManager();
+            playerOneController = new ReloadedController(Player.PlayerOne, controllerManager);
+            playerTwoController = new ReloadedController(Player.PlayerTwo, controllerManager);
+            playerThreeController = new ReloadedController(Player.PlayerThree, controllerManager);
+            playerFourController = new ReloadedController(Player.PlayerFour, controllerManager);
+
+            // Hook get controls function.
+            psPADServerHook = FunctionHook<psPADServerPC>.Create(0x444F30, PSPADServerImpl).Activate();
+
+            // Copy the old function to a new place and create a function from it.
+            byte[] periMakeRepeatBytes = GameProcess.ReadMemory((IntPtr) 0x00434FF0, 0xDD);
+            IntPtr functionPtr = MemoryBufferManager.Add(periMakeRepeatBytes);
+
+            periMakeRepeatFunction = FunctionWrapper.CreateWrapperFunction<sGamePeri__MakeRepeatCount>((long)functionPtr);
+            periMakeRepeatCountHook = FunctionHook<sGamePeri__MakeRepeatCount>.Create(0x00434FF0, MakeRepeatCountImpl).Activate();
         }
+
+        /// <summary>
+        /// Sends the individual player controls directly to the game.
+        /// </summary>
+        /// <returns>Game does not use return value.</returns>
+        private static int PSPADServerImpl()
+        {
+            if (Reloaded.Native.Functions.WindowProperties.IsWindowActivated())
+            {
+                playerOneController.SendInputs();
+                playerTwoController.SendInputs();
+                playerThreeController.SendInputs();
+                playerFourController.SendInputs();
+            }
+
+            // Return value exists but the game does not use it.
+            return 1;
+        }
+
+        /// <summary>
+        /// Reimplements the original function which calculates/sets how much each button has been repeatedly pressed/tapped.
+        /// </summary>
+        /// <param name="skyPad"></param>
+        /// <returns></returns>
+        private static SkyPad* MakeRepeatCountImpl(SkyPad* skyPad)
+        {
+            // Do not mix trigger buttons and triggers.
+            switch ((int)skyPad)
+            {
+                // 1P, 2P, 3P, 4P cases.
+                case 0x00A23A68: playerOneController.SetTriggerRotations(skyPad); break;
+                case 0x00A23AB4: playerTwoController.SetTriggerRotations(skyPad); break;
+                case 0x00A23B00: playerThreeController.SetTriggerRotations(skyPad); break;
+                case 0x00A23B4C: playerFourController.SetTriggerRotations(skyPad); break;
+            }
+            
+            return periMakeRepeatFunction(skyPad);
+        }
+
+        [ReloadedFunction(CallingConventions.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int psPADServerPC(); // 00444F30
+
+        // The actual function we would want to hook to control the triggers; the only issue seems to be weird behaviour
+        // When hooking the function - button inputs repeating over and over without user interaction and straight up 
+        // crashes in C# method calls.
+        // I've spent 6 hours messing with this function; even made a manual custom hook but no avail.
+        // 0x004351A0
+        [ReloadedFunction(new []{ Register.ebx, Register.edi, Register.esi}, Register.eax, StackCleanup.Caller)]
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate SkyPad* periConvertPadData(IntPtr unknownPtr, HeroesController* heroesControllerPointer, SkyPad* skyPad);
+
+        // 00434FF0
+        [ReloadedFunction(new[] { Register.eax }, Register.eax, StackCleanup.Caller)]
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate SkyPad* sGamePeri__MakeRepeatCount(SkyPad* skyPad);
     }
 }
