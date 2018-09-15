@@ -76,12 +76,8 @@ namespace Reloaded_Mod_Template.Controller
         {
             if (_heroesControllerHelper.ControllerMapping.TriggerOptions.EnableTriggerRotation)
             {
-                // Do not mix triggers and buttons.
-                if ((*skypad).TriggerPressureL != 0 || (*skypad).TriggerPressureR != 0)
-                    return;
-                
                 // Get trigger pressures scaled to Heroes' 255 max.
-                var triggerPressures = GetTriggerPressures(255F);
+                var   triggerPressures = GetTriggerPressures(255F);
                 short leftTriggerPressure = (short)Math.Round(triggerPressures.leftPressure);
                 short rightTriggerPressure = (short)Math.Round(triggerPressures.rightPressure);
 
@@ -95,12 +91,6 @@ namespace Reloaded_Mod_Template.Controller
                     // Apply trigger pressures.
                     (*skypad).TriggerPressureL = leftTriggerPressure;
                     (*skypad).TriggerPressureR = rightTriggerPressure;
-
-                    // Simulate button press if necessary.
-                    if (leftTriggerPressure > 0)
-                        (*skypad).ButtonFlags |= ButtonFlags.CameraL;
-                    if (rightTriggerPressure > 0)
-                        (*skypad).ButtonFlags |= ButtonFlags.CameraR;
                 }
             }
         }

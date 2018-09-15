@@ -70,6 +70,9 @@ namespace Reloaded_Mod_Template.Controller.Heroes
                 if (keyValue.Value(controllerButtons))
                     currentFlags |= keyValue.Key;
 
+            // Set triggers.
+            currentFlags |= SetTriggers(ref controllerInputs);
+
             // Update struct and last set buttons.
             (*HeroesController).SetPressedButtons(_lastFrameFlags, currentFlags);
             (*HeroesController).SetReleasedButtons(_lastFrameFlags, currentFlags);
@@ -98,6 +101,25 @@ namespace Reloaded_Mod_Template.Controller.Heroes
             (*HeroesController).LeftStickY = leftStickY;
             (*HeroesController).RightStickX = rightStickX;
             (*HeroesController).RightStickY = rightStickY;
+        }
+
+        /// <summary>
+        /// Emulates a left or right bumper press if any of the triggers are held.
+        /// Returns the extra flags to be appended (OR'd) to the existing button flags.
+        /// </summary>
+        private ButtonFlags SetTriggers(ref ControllerInputs controllerInputs)
+        {
+            ButtonFlags extraFlags = 0;
+            if (ControllerMapping.TriggerOptions.EnableTriggerRotation)
+            {
+                if (controllerInputs.GetLeftTriggerPressure() > 0)
+                    extraFlags |= ControllerMapping.TriggerOptions.SwapTriggers ? ButtonFlags.CameraR : ButtonFlags.CameraL;
+
+                if (controllerInputs.GetRightTriggerPressure() > 0)
+                    extraFlags |= ControllerMapping.TriggerOptions.SwapTriggers ? ButtonFlags.CameraL : ButtonFlags.CameraR;
+            }
+
+            return extraFlags;
         }
     }
 }
