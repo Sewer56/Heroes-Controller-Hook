@@ -26,5 +26,6 @@ namespace Reloaded_Mod_Template.Config
         DpadLeft,
         DpadRight,
         DpadDown,
+        None = 255
     }
 }
