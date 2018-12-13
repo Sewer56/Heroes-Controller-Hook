@@ -62,7 +62,12 @@ namespace Reloaded_Mod_Template.Config
             if (! File.Exists(filePath))
                 new ControllerMapping().ToFile(filePath);
 
-            return JsonConvert.DeserializeObject<ControllerMapping>(File.ReadAllText(filePath));
+            var mapping = JsonConvert.DeserializeObject<ControllerMapping>(File.ReadAllText(filePath));
+
+            // Re-write mapping back to disk to update it in case new additions to this project were made.
+            mapping.ToFile(filePath);
+
+            return mapping;
         }
 
         public void ToFile(string filePath)
