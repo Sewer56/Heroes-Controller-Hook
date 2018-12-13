@@ -188,6 +188,10 @@ namespace Reloaded_Mod_Template
         /// <returns></returns>
         private static SkyPad* MakeRepeatCountImpl(SkyPad* skyPad)
         {
+            // This function has been chosen because it sits between the function
+            // that actually applies the current SkyPad inputs to the game
+            // and the original SkyPad inputs have been assigned.
+
             // Do not mix trigger buttons and triggers.
             switch ((int)skyPad)
             {
