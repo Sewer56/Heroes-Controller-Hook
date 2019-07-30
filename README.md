@@ -7,6 +7,12 @@
 	<p>C# based universal mod loader framework compatible with arbitrary processes.</p>
 </div>
 
+# Deprecation Notice
+This project has been deprecated. 
+
+It has been ported to the newer, [Reloaded-II](https://github.com/Reloaded-Project/Reloaded-II) mod loader.
+
+The new project can be found here: [Heroes.Controller.Hook.ReloadedII](https://github.com/Sewer56/Heroes.Controller.Hook.ReloadedII).
 
 # About This Project
 
@@ -15,6 +21,7 @@ The following project provides support for sending inputs to Sonic Heroes using 
 ## How to Use
 
 A. Install Heroes-Controller-Hook like a regular Reloaded mod.
+
 B. Setup your individual controllers and input devices inside Reloaded's Launcher
 
 ![Exhibit A](https://i.imgur.com/SBwAM7x.png)
